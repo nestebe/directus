@@ -1420,3 +1420,14 @@ layouts:
     search_this_area: Search this area
     clear_data_filter: Clear Data Filter
     clear_location_filter: Clear Location Filter
+  kanban:
+    kanban: Kanban
+    group_field: Group Field
+    group_title: Group Title
+    image_source: Image
+    title: Title
+    text: Text
+    crop: Crop
+    image_fit: Image Fit,
+    date: Date
+    tags: Tags

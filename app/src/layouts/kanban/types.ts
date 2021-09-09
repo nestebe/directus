@@ -1,11 +1,12 @@
 export type LayoutOptions = {
 	groupField: string;
 	groupTitle: string;
-	icon?: string;
+	dateField: string;
+	tagsField?: string;
 	imageSource?: string;
 	title?: string;
 	text?: string;
-	imageFit?: 'crop' | 'contain';
+	crop: boolean;
 };
 
 export type LayoutQuery = {
@@ -16,15 +17,18 @@ export type LayoutQuery = {
 };
 
 export type Group = {
-	id: string | number,
-	title: string,
-	items: Item[]
-}
+	id: string | number;
+	title: string;
+	items: Item[];
+};
 
 export type Item = {
-	id: string | number,
-	title?: string,
-	text?: string,
-	image?: string,
-	item: Record<string, any>
-}
+	id: string | number;
+	title?: string;
+	text?: string;
+	image?: string;
+	date?: string;
+	dateType?: string;
+	tags?: string;
+	item: Record<string, any>;
+};
