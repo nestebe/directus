@@ -103,7 +103,7 @@ export default defineComponent({
 		margin-right: 20px;
 		padding: 8px 16px;
 		background-color: var(--background-normal);
-		border: 1px solid var(--border-normal);
+		border: var(--border-width) solid var(--border-normal);
 		border-radius: var(--border-radius);
 
 		.header {
@@ -139,7 +139,7 @@ export default defineComponent({
 				margin-bottom: 6px;
 				padding: 8px 16px;
 				background-color: var(--background-page);
-				border: 1px solid var(--border-normal);
+				border: var(--border-width) solid var(--border-normal);
 				border-radius: var(--border-radius);
 			}
 
