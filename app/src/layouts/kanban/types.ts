@@ -32,3 +32,19 @@ export type Item = {
 	tags?: string;
 	item: Record<string, any>;
 };
+
+
+export type ChangeEvent = {
+	added?: {
+		element: Item,
+		newIndex: number,
+	},
+	removed?: {
+		element: Item,
+		newIndex: number,
+	},
+	moved?: {
+		element: Item,
+		newIndex: number,
+	}
+}

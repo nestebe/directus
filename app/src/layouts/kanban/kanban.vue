@@ -18,7 +18,7 @@
 					</v-menu>
 				</div>
 			</div>
-			<draggable :list="group.items" group="group" draggable=".item" class="items" item-key="id">
+			<draggable :list="group.items" group="group" draggable=".item" class="items" item-key="id" @change="">
 				<template #item="{ element }">
 					<router-link :to="`${collection}/${element.id}`" class="item">
 						<render-template
@@ -78,6 +78,10 @@ export default defineComponent({
 			type: Object as PropType<Field>,
 			default: null,
 		},
+		change: {
+			type: Function as PropType<ChangeEvent>,
+			default: null
+		}
 	},
 	emits: ['update:selection', 'update:limit', 'update:size', 'update:sort', 'update:width'],
 	setup(props, { emit }) {
