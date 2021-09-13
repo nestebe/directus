@@ -80,6 +80,7 @@
 			v-model:active="selectModalActive"
 			:collection="relatedCollection.collection"
 			:selection="selection"
+			selection-type="select-one"
 			@input="stageSelection"
 		/>
 	</div>

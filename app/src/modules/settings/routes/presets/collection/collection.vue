@@ -56,7 +56,7 @@
 				fixed-header
 				:items="presets"
 				:loading="loading"
-				show-select
+				:selection-type="'select-multiple'"
 				@click:row="onRowClick"
 			>
 				<template #[`item.scope`]="{ item }">

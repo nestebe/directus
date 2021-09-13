@@ -13,6 +13,7 @@
 
 			<th v-if="showSelect" class="select cell" scope="col">
 				<v-checkbox
+					v-if="selectionType === 'select-multiple'"
 					:model-value="allItemsSelected"
 					:indeterminate="someItemsSelected"
 					@update:model-value="toggleSelectAll"
@@ -65,9 +66,9 @@ export default defineComponent({
 			type: Object as PropType<Sort>,
 			required: true,
 		},
-		showSelect: {
-			type: Boolean,
-			default: false,
+		selectionType: {
+			type: String as PropType<'no-select' | 'select-one' | 'select-multiple'>,
+			default: 'select-multiple',
 		},
 		showResize: {
 			type: Boolean,
@@ -114,6 +115,8 @@ export default defineComponent({
 		useEventListener(window, 'pointermove', throttle(onMouseMove, 40));
 		useEventListener(window, 'pointerup', onMouseUp);
 
+		const showSelect = ['select-one', 'select-multiple'].includes(props.selectionType);
+
 		return {
 			t,
 			changeSort,
@@ -127,6 +130,7 @@ export default defineComponent({
 			toggleManualSort,
 			toggleSelectAll,
 			getTooltipForSortIcon,
+			showSelect,
 		};
 
 		function getClassesForHeader(header: Header) {

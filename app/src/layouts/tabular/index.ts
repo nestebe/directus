@@ -42,7 +42,7 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 		const filters = useSync(props, 'filters', emit);
 		const searchQuery = useSync(props, 'searchQuery', emit);
 
-		const { collection } = toRefs(props);
+		const { collection, selectionType } = toRefs(props);
 
 		const { info, primaryKeyField, fields: fieldsInCollection, sortField } = useCollection(collection);
 
@@ -126,6 +126,7 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 			resetPresetAndRefresh,
 			selectAll,
 			availableFields,
+			selectionType,
 		};
 
 		async function resetPresetAndRefresh() {

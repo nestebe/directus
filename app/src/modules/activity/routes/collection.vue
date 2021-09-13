@@ -27,7 +27,7 @@
 				<activity-navigation v-model:filters="filters" />
 			</template>
 
-			<component :is="`layout-${layout}`" v-bind="layoutState" class="layout" />
+			<component :is="`layout-${layout}`" v-bind="layoutState" class="layout" selection-type="no-select" />
 
 			<router-view name="detail" :primary-key="primaryKey" />
 

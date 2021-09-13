@@ -39,6 +39,10 @@ function createLayoutWrapper<Options, Query>(layout: LayoutConfig): Component {
 				type: String as PropType<string | null>,
 				default: null,
 			},
+			selectionType: {
+				type: String as PropType<'no-select' | 'select-one' | 'select-multiple'>,
+				default: 'select-multiple',
+			},
 			selectMode: {
 				type: Boolean,
 				default: false,

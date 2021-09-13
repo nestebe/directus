@@ -7,7 +7,7 @@
 			v-model:headers="tableHeadersWritable"
 			class="table"
 			fixed-header
-			:show-select="readonly ? false : selection !== undefined"
+			:selection-type="readonly ? 'no-select' : selectionType"
 			show-resize
 			must-sort
 			:sort="tableSort"
@@ -94,6 +94,10 @@ export default defineComponent({
 		collection: {
 			type: String,
 			required: true,
+		},
+		selectionType: {
+			type: String as PropType<'no-select' | 'select-one' | 'select-multiple'>,
+			default: 'select-multiple',
 		},
 		selection: {
 			type: Array as PropType<Item[]>,

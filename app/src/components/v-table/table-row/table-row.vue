@@ -12,7 +12,7 @@
 			<v-icon name="drag_handle" class="drag-handle" :class="{ 'sorted-manually': sortedManually }" />
 		</td>
 
-		<td v-if="showSelect" class="select cell" @click.stop>
+		<td v-if="['select-one', 'select-multiple'].includes(selectionType)" class="select cell" @click.stop>
 			<v-checkbox :model-value="isSelected" @update:model-value="$emit('item-selected', $event)" />
 		</td>
 
@@ -55,9 +55,9 @@ export default defineComponent({
 			type: Object,
 			required: true,
 		},
-		showSelect: {
-			type: Boolean,
-			default: false,
+		selectionType: {
+			type: String as PropType<'no-select' | 'select-one' | 'select-multiple'>,
+			default: 'select-multiple',
 		},
 		showManualSort: {
 			type: Boolean,
@@ -85,6 +85,13 @@ export default defineComponent({
 		},
 	},
 	emits: ['click', 'item-selected'],
+	setup(props) {
+		const showSelect = ['select-one', 'select-multiple'].includes(props.selectionType);
+
+		return {
+			showSelect,
+		};
+	},
 });
 </script>
 

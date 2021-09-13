@@ -9,7 +9,7 @@
 			<table-header
 				v-model:headers="internalHeaders"
 				v-model:sort="internalSort"
-				:show-select="showSelect"
+				:selection-type="selectionType"
 				:show-resize="showResize"
 				:some-items-selected="someItemsSelected"
 				:all-items-selected="allItemsSelected"
@@ -54,7 +54,7 @@
 					<table-row
 						:headers="internalHeaders"
 						:item="element"
-						:show-select="!disabled && showSelect"
+						:selection-type="disabled ? 'no-select' : selectionType"
 						:show-manual-sort="!disabled && showManualSort"
 						:is-selected="getSelectedState(element)"
 						:subdued="loading"
@@ -129,9 +129,9 @@ export default defineComponent({
 			type: Boolean,
 			default: false,
 		},
-		showSelect: {
-			type: Boolean,
-			default: false,
+		selectionType: {
+			type: String as PropType<'no-select' | 'select-one' | 'select-multiple'>,
+			default: 'select-multiple',
 		},
 		showResize: {
 			type: Boolean,
@@ -237,6 +237,8 @@ export default defineComponent({
 			},
 		});
 
+		const showSelect = ['select-one', 'select-multiple'].includes(props.selectionType);
+
 		// In case the sort prop isn't used, we'll use this local sort state as a fallback.
 		// This allows the table to allow inline sorting on column ootb without the need for
 		const internalLocalSort = ref<Sort>({
@@ -256,7 +258,7 @@ export default defineComponent({
 
 		const fullColSpan = computed<string>(() => {
 			let length = internalHeaders.value.length + 1; // +1 account for spacer
-			if (props.showSelect) length++;
+			if (showSelect) length++;
 			if (props.showManualSort) length++;
 			if (hasItemAppendSlot.value) length++;
 
@@ -295,7 +297,7 @@ export default defineComponent({
 				})
 				.reduce((acc, val) => (acc += ' ' + val), '');
 
-			if (props.showSelect) gridTemplateColumns = '36px ' + gridTemplateColumns;
+			if (showSelect) gridTemplateColumns = '36px ' + gridTemplateColumns;
 			if (props.showManualSort) gridTemplateColumns = '36px ' + gridTemplateColumns;
 
 			gridTemplateColumns = gridTemplateColumns + ' 1fr';

@@ -9,6 +9,7 @@
 		v-model:search-query="searchQuery"
 		:collection="collection"
 		select-mode
+		:selection-type="selectionType"
 	>
 		<v-drawer v-model="internalActive" :title="t('select_item')" @cancel="cancel">
 			<template #subtitle>
@@ -53,6 +54,10 @@ export default defineComponent({
 		active: {
 			type: Boolean,
 			default: false,
+		},
+		selectionType: {
+			type: String as PropType<'no-select' | 'select-one' | 'select-multiple'>,
+			default: 'select-multiple',
 		},
 		selection: {
 			type: Array as PropType<(number | string)[]>,
