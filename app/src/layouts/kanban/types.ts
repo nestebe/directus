@@ -41,10 +41,11 @@ export type ChangeEvent = {
 	},
 	removed?: {
 		element: Item,
-		newIndex: number,
+		oldIndex: number,
 	},
 	moved?: {
 		element: Item,
 		newIndex: number,
+		oldIndex: number,
 	}
 }

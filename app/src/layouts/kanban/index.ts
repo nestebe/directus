@@ -5,7 +5,7 @@ import KanbanSidebar from './sidebar.vue';
 import KanbanActions from './actions.vue';
 
 import { useI18n } from 'vue-i18n';
-import { Group, LayoutOptions, LayoutQuery } from './types';
+import { ChangeEvent, Group, LayoutOptions, LayoutQuery } from './types';
 import useSync from '@/composables/use-sync';
 import useCollection from '@/composables/use-collection';
 import useItems from '@/composables/use-items';
@@ -16,7 +16,7 @@ import adjustFieldsForDisplays from '@/utils/adjust-fields-for-displays';
 import { getRelationType } from '@/utils/get-relation-type';
 import { Filter, Item } from '@directus/shared/types';
 import { useGroups } from './useGroups';
-import { addTokenToURL } from '@/api';
+import api, { addTokenToURL } from '@/api';
 import { getRootPath } from '@/utils/get-root-path';
 
 export default defineLayout<LayoutOptions, LayoutQuery>({
@@ -164,7 +164,30 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 			dateFields,
 			tagsField,
 			tagsFields,
+			change
 		};
+
+		function change(group: Group, event: ChangeEvent) {
+			const pkField = primaryKeyField.value?.field
+			const gField = groupField.value
+
+			if(pkField === undefined || gField === null) return
+
+			if(event.moved) {
+				changeManualSort({item: group.items[event.moved.oldIndex].id, to: group.items[event.moved.newIndex].id})
+			} else if(event.added) {
+				const itemIndex = items.value.findIndex((item) => item[pkField] === event.added?.element.id)
+				items.value[itemIndex][gField] = group.id
+
+				api.patch(`/items/${collection.value}/${event.added.element.id}`, {
+					[gField]: group.id
+				})
+
+				if(group.items.length > 0) {
+					changeManualSort({item: event.added.element.id, to: group.items[event.added.newIndex].id})
+				}
+			}
+		}
 
 		function parseUrl(file: Record<string, any>) {
 			if (!file || !file.type) return;

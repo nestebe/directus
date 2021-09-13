@@ -18,7 +18,7 @@
 					</v-menu>
 				</div>
 			</div>
-			<draggable :list="group.items" group="group" draggable=".item" class="items" item-key="id" @change="">
+			<draggable :list="group.items" group="group" draggable=".item" class="items" item-key="id" @change="change(group, $event)">
 				<template #item="{ element }">
 					<router-link :to="`${collection}/${element.id}`" class="item">
 						<render-template
@@ -47,7 +47,7 @@
 import { useI18n } from 'vue-i18n';
 import { defineComponent, PropType } from 'vue';
 import { Field } from '@directus/shared/types';
-import { Group } from './types';
+import { ChangeEvent, Group } from './types';
 import Draggable from 'vuedraggable';
 
 export default defineComponent({
@@ -79,7 +79,7 @@ export default defineComponent({
 			default: null,
 		},
 		change: {
-			type: Function as PropType<ChangeEvent>,
+			type: Function as PropType<(group: Group, event: ChangeEvent) => void>,
 			default: null
 		}
 	},
