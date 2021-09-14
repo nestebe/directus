@@ -18,7 +18,15 @@
 					</v-menu>
 				</div>
 			</div>
-			<draggable :list="group.items" group="group" draggable=".item" class="items" item-key="id" @change="change(group, $event)">
+			<draggable
+				:model-value="group.items"
+				group="group"
+				draggable=".item"
+				:disabled="loadingSort"
+				class="items"
+				item-key="id"
+				@change="change(group, $event)"
+			>
 				<template #item="{ element }">
 					<router-link :to="`${collection}/${element.id}`" class="item">
 						<render-template
@@ -80,8 +88,12 @@ export default defineComponent({
 		},
 		change: {
 			type: Function as PropType<(group: Group, event: ChangeEvent) => void>,
-			default: null
-		}
+			default: null,
+		},
+		loadingSort: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	emits: ['update:selection', 'update:limit', 'update:size', 'update:sort', 'update:width'],
 	setup(props, { emit }) {
@@ -137,6 +149,7 @@ export default defineComponent({
 
 		.items {
 			flex: 1;
+			overflow-y: auto;
 
 			.item {
 				display: block;

@@ -24,6 +24,7 @@ export type Group = {
 
 export type Item = {
 	id: string | number;
+	sort: number;
 	title?: string;
 	text?: string;
 	image?: string;
@@ -33,19 +34,18 @@ export type Item = {
 	item: Record<string, any>;
 };
 
-
 export type ChangeEvent = {
 	added?: {
-		element: Item,
-		newIndex: number,
-	},
+		element: Item;
+		newIndex: number;
+	};
 	removed?: {
-		element: Item,
-		oldIndex: number,
-	},
+		element: Item;
+		oldIndex: number;
+	};
 	moved?: {
-		element: Item,
-		newIndex: number,
-		oldIndex: number,
-	}
-}
+		element: Item;
+		newIndex: number;
+		oldIndex: number;
+	};
+};

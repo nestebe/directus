@@ -5,7 +5,7 @@ import KanbanSidebar from './sidebar.vue';
 import KanbanActions from './actions.vue';
 
 import { useI18n } from 'vue-i18n';
-import { ChangeEvent, Group, LayoutOptions, LayoutQuery } from './types';
+import { ChangeEvent, Group, Item, LayoutOptions, LayoutQuery } from './types';
 import useSync from '@/composables/use-sync';
 import useCollection from '@/composables/use-collection';
 import useItems from '@/composables/use-items';
@@ -14,7 +14,7 @@ import { useFieldsStore, useRelationsStore } from '@/stores';
 import { getFieldsFromTemplate } from '@/utils/get-fields-from-template';
 import adjustFieldsForDisplays from '@/utils/adjust-fields-for-displays';
 import { getRelationType } from '@/utils/get-relation-type';
-import { Filter, Item } from '@directus/shared/types';
+import { Filter } from '@directus/shared/types';
 import { useGroups } from './useGroups';
 import api, { addTokenToURL } from '@/api';
 import { getRootPath } from '@/utils/get-root-path';
@@ -34,6 +34,7 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 
 		const relationsStore = useRelationsStore();
 		const fieldsStore = useFieldsStore();
+		const loadingSort = ref(false);
 
 		const selection = useSync(props, 'selection', emit);
 		const layoutOptions = useSync(props, 'layoutOptions', emit);
@@ -115,7 +116,7 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 				return acc;
 			}, {} as Record<string, any>);
 
-			for (const item of items.value) {
+			items.value.forEach((item, index) => {
 				if (item[group] in itemGroups)
 					itemGroups[item[group]].items.push({
 						id: item[pkField],
@@ -125,9 +126,10 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 						date: dateField.value ? item[dateField.value] : undefined,
 						dateType: dateFields.value.find((field) => field.field === dateField.value)?.type,
 						tags: tagsField.value ? item[tagsField.value] : undefined,
+						sort: index,
 						item,
 					});
-			}
+			});
 
 			return Object.values(itemGroups);
 		});
@@ -164,29 +166,48 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 			dateFields,
 			tagsField,
 			tagsFields,
-			change
+			change,
+			loadingSort,
 		};
 
-		function change(group: Group, event: ChangeEvent) {
-			const pkField = primaryKeyField.value?.field
-			const gField = groupField.value
+		async function change(group: Group, event: ChangeEvent) {
+			const gField = groupField.value;
+			const pkField = primaryKeyField.value?.field;
 
-			if(pkField === undefined || gField === null) return
+			if (gField === null || pkField === undefined || event.removed) return;
 
-			if(event.moved) {
-				changeManualSort({item: group.items[event.moved.oldIndex].id, to: group.items[event.moved.newIndex].id})
-			} else if(event.added) {
-				const itemIndex = items.value.findIndex((item) => item[pkField] === event.added?.element.id)
-				items.value[itemIndex][gField] = group.id
+			loadingSort.value = true;
 
-				api.patch(`/items/${collection.value}/${event.added.element.id}`, {
-					[gField]: group.id
-				})
+			if (event.moved) {
+				await changeManualSort({
+					item: group.items[event.moved.oldIndex].id,
+					to: group.items[event.moved.newIndex].id,
+				});
+			} else if (event.added) {
+				const itemIndex = items.value.findIndex((item) => item[pkField] === event.added?.element.id);
 
-				if(group.items.length > 0) {
-					changeManualSort({item: event.added.element.id, to: group.items[event.added.newIndex].id})
+				items.value[itemIndex][gField] = group.id;
+
+				if (group.items.length > 0) {
+					const item = event.added.element;
+					const before = group.items[event.added.newIndex - 1] as Item | undefined;
+					const after = group.items[event.added.newIndex] as Item | undefined;
+
+					if (item.sort !== undefined) {
+						if (after?.sort !== undefined && after.sort < item.sort) {
+							await changeManualSort({ item: item.id, to: after.id });
+						} else if (before?.sort !== undefined && before.sort > item.sort) {
+							await changeManualSort({ item: item.id, to: before.id });
+						}
+					}
 				}
+
+				await api.patch(`/items/${collection.value}/${event.added.element.id}`, {
+					[gField]: group.id,
+				});
 			}
+
+			loadingSort.value = false;
 		}
 
 		function parseUrl(file: Record<string, any>) {
@@ -240,18 +261,7 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
 				},
 			});
 
-			const sort = computed({
-				get() {
-					return layoutQuery.value?.sort || primaryKeyField.value?.field || '';
-				},
-				set(newSort: string) {
-					layoutQuery.value = {
-						...(layoutQuery.value || {}),
-						page: 1,
-						sort: newSort,
-					};
-				},
-			});
+			const sort = computed(() => sortField.value || primaryKeyField.value?.field || '');
 
 			const limit = computed({
 				get() {
